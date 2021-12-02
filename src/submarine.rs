@@ -36,6 +36,7 @@ pub struct Water {
     sub: Submarine,
     sub_horizontal: u64,
     sub_depth: u64,
+    aim: u64,
 }
 
 impl Water {
@@ -44,10 +45,11 @@ impl Water {
             sub: sub.clone(),
             sub_horizontal: 0,
             sub_depth: 0,
+            aim: 0,
         }
     }
 
-    pub fn vroom(&mut self) {
+    pub fn run1(&mut self) {
         for instr in &self.sub.instr {
             match instr {
                 Instr::Forward(v) => {
@@ -63,6 +65,23 @@ impl Water {
         }
     }
 
+    pub fn run2(&mut self) {
+        for instr in &self.sub.instr {
+            match instr {
+                Instr::Forward(v) => {
+                    self.sub_horizontal += v;
+                    self.sub_depth += self.aim * v;
+                }
+                Instr::Down(v) => {
+                    self.aim += v;
+                }
+                Instr::Up(v) => {
+                    self.aim -= v;
+                }
+            }
+        }
+    }
+
     pub fn position_mult(&self) -> u64 {
         self.sub_horizontal * self.sub_depth
     }
@@ -73,7 +92,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_position_mult() {
+    fn test_position_run1() {
         let input = "forward 5\n\
                            down 5\n\
                            forward 8\n\
@@ -83,8 +102,24 @@ mod tests {
         let sub = Submarine::from(input);
 
         let mut water = Water::submerge(&sub);
-        water.vroom();
+        water.run1();
 
         assert_eq!(water.position_mult(), 150);
+    }
+
+    #[test]
+    fn test_position_run2() {
+        let input = "forward 5\n\
+                           down 5\n\
+                           forward 8\n\
+                           up 3\n\
+                           down 8\n\
+                           forward 2";
+        let sub = Submarine::from(input);
+
+        let mut water = Water::submerge(&sub);
+        water.run2();
+
+        assert_eq!(water.position_mult(), 900);
     }
 }
