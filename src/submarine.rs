@@ -10,7 +10,9 @@ impl From<&str> for Instr {
         let parts: Vec<&str> = input.split(' ').collect();
 
         match (parts.get(0), parts.get(1)) {
-            (Some(&"forward"), Some(v)) => Instr::Forward(v.parse::<u64>().expect("Erroneous input")),
+            (Some(&"forward"), Some(v)) => {
+                Instr::Forward(v.parse::<u64>().expect("Erroneous input"))
+            }
             (Some(&"down"), Some(v)) => Instr::Down(v.parse::<u64>().expect("Erroneous input")),
             (Some(&"up"), Some(v)) => Instr::Up(v.parse::<u64>().expect("Erroneous input")),
             _ => panic!("Invalid instruction"),
@@ -26,7 +28,7 @@ pub struct Submarine {
 impl From<&str> for Submarine {
     fn from(input: &str) -> Self {
         Submarine {
-            instr: input.lines().map(Instr::from).collect()
+            instr: input.lines().map(Instr::from).collect(),
         }
     }
 }

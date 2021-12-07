@@ -10,7 +10,7 @@ impl From<&str> for Depth {
                 .lines()
                 .map(|line| line.parse::<u64>())
                 .filter_map(Result::ok)
-                .collect()
+                .collect(),
         }
     }
 }

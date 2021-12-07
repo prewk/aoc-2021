@@ -9,11 +9,15 @@ pub struct Diagnostics {
 impl From<&str> for Diagnostics {
     fn from(input: &str) -> Self {
         Diagnostics {
-            bits: input.lines().nth(0).expect("Expected at least one line").len(),
+            bits: input
+                .lines()
+                .nth(0)
+                .expect("Expected at least one line")
+                .len(),
             report: input
                 .lines()
                 .map(|line| usize::from_str_radix(line, 2).expect("Invalid binary line"))
-                .collect()
+                .collect(),
         }
     }
 }
@@ -61,7 +65,8 @@ mod tests {
 
     #[test]
     fn test_power_consumption() {
-        let diagnostics = Diagnostics::from("00100\n\
+        let diagnostics = Diagnostics::from(
+            "00100\n\
                                                         11110\n\
                                                         10110\n\
                                                         10111\n\
@@ -72,7 +77,8 @@ mod tests {
                                                         10000\n\
                                                         11001\n\
                                                         00010\n\
-                                                        01010");
+                                                        01010",
+        );
 
         assert_eq!(diagnostics.get_power_consumption(), 198)
     }

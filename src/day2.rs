@@ -1,7 +1,9 @@
 use crate::submarine::*;
 
 #[aoc_generator(day2)]
-pub fn input_generator(input: &str) -> Submarine { Submarine::from(input) }
+pub fn input_generator(input: &str) -> Submarine {
+    Submarine::from(input)
+}
 
 #[aoc(day2, part1)]
 pub fn part1(sub: &Submarine) -> u64 {
