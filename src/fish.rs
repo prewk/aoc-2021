@@ -1,60 +1,49 @@
 #[derive(Clone)]
 pub struct FishyWaters {
-    pub state: Vec<u64>,
+    pub days: [u64; 9],
 }
 
 impl From<&str> for FishyWaters {
     fn from(input: &str) -> Self {
+        let mut days: [u64; 9] = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        input
+            .lines()
+            .nth(0)
+            .unwrap()
+            .split(',')
+            .map(|n| n.parse::<u64>())
+            .filter_map(Result::ok)
+            .for_each(|day| {
+                days[day as usize] += 1;
+            });
+
         FishyWaters {
-            state: input
-                .lines()
-                .nth(0)
-                .unwrap()
-                .split(',')
-                .map(|n| n.parse::<u64>())
-                .filter_map(Result::ok)
-                .collect(),
+            days
         }
     }
 }
 
-impl FishyWaters {
-    pub fn cycle(&self) -> FishyWaters {
-        let mut newbies: Vec<u64> = vec![];
-        let mut next_day: Vec<u64> = vec![];
+pub fn count_fishes(waters: &FishyWaters, day_count: usize) -> u64 {
+    let mut state = waters.days.clone();
 
-        for prev in &self.state {
-            let next = match prev {
-                0 => {
-                    newbies.push(8);
-                    6
-                }
-                _ => prev - 1,
-            };
+    for _ in 0..day_count {
+        let mut wip = state.clone();
 
-            next_day.push(next);
-        }
+        wip[8] = state[0];
+        wip[7] = state[8];
+        wip[6] = state[7] + state[0];
+        wip[5] = state[6];
+        wip[4] = state[5];
+        wip[3] = state[4];
+        wip[2] = state[3];
+        wip[1] = state[2];
+        wip[0] = state[1];
 
-        next_day.append(&mut newbies);
-
-        FishyWaters {
-            state: next_day,
-        }
+        state = wip
     }
 
-    pub fn len(&self) -> usize {
-        self.state.len()
-    }
-}
-
-pub fn get_fish_count(initial: &FishyWaters, days: u64) -> usize {
-    let mut current = initial.clone();
-
-    for i in 0..days {
-        current = current.cycle();
-    }
-
-    current.len()
+    state.iter().sum()
 }
 
 #[cfg(test)]
@@ -65,7 +54,7 @@ mod tests {
     fn test_get_fish_count() {
         let waters = FishyWaters::from("3,4,3,1,2");
 
-        assert_eq!(get_fish_count(&waters, 18), 26);
-        assert_eq!(get_fish_count(&waters, 80), 5934);
+        assert_eq!(count_fishes(&waters, 18), 26);
+        assert_eq!(count_fishes(&waters, 80), 5934);
     }
 }

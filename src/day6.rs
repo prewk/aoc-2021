@@ -6,11 +6,11 @@ pub fn input_generator(input: &str) -> FishyWaters {
 }
 
 #[aoc(day6, part1)]
-pub fn part1(waters: &FishyWaters) -> usize {
-    get_fish_count(&waters, 80)
+pub fn part1(waters: &FishyWaters) -> u64 {
+    count_fishes(&waters, 80)
 }
 
 #[aoc(day6, part2)]
-pub fn part2(waters: &FishyWaters) -> usize {
-    get_fish_count(&waters, 256)
+pub fn part2(waters: &FishyWaters) -> u64 {
+    count_fishes(&waters, 256)
 }
