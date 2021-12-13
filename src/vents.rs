@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 #[derive(Debug, PartialEq)]
 pub struct Map {
-    vents_without_diag: HashMap<(u64, u64), u64>,
-    vents_with_diag: HashMap<(u64, u64), u64>,
+    pub vents_without_diag: HashMap<(u64, u64), u64>,
+    pub vents_with_diag: HashMap<(u64, u64), u64>,
 }
 
 impl From<&str> for Map {
@@ -46,13 +46,13 @@ impl From<&str> for Map {
                         if to_y > from_y {
                             // \
                             //  v
-                            for step in 0..(*to_y - *from_y) {
+                            for step in 0..=(*to_y - *from_y) {
                                 *vents_with_diag.entry((*from_x + step, *from_y + step)).or_insert(0) += 1;
                             }
                         } else {
                             //  ^
                             // /
-                            for step in 0..(*from_y - *to_y) {
+                            for step in 0..=(*from_y - *to_y) {
                                 *vents_with_diag.entry((*from_x + step, *from_y - step)).or_insert(0) += 1;
                             }
                         }
@@ -61,13 +61,13 @@ impl From<&str> for Map {
                         if to_y > from_y {
                             //  /
                             // v
-                            for step in 0..(*to_y - *from_y) {
+                            for step in 0..=(*to_y - *from_y) {
                                 *vents_with_diag.entry((*from_x - step, *from_y + step)).or_insert(0) += 1;
                             }
                         } else {
                             // ^
                             //  \
-                            for step in 0..(*from_y - *to_y) {
+                            for step in 0..=(*from_y - *to_y) {
                                 *vents_with_diag.entry((*from_x - step, *from_y - step)).or_insert(0) += 1;
                             }
                         }
@@ -89,6 +89,22 @@ impl Map {
 
     pub fn get_count_with_diagonals(&self) -> usize {
         self.vents_with_diag.values().filter(|v| v > &&1u64).count()
+    }
+
+    pub fn render(&self, canvas_x: u64, canvas_y: u64) -> Vec<Vec<u64>> {
+        let mut rows = vec![];
+
+        for y in 0..canvas_y {
+            let mut row: Vec<u64> = vec![];
+
+            for x in 0..canvas_x {
+                row.push(*self.vents_with_diag.get(&(x, y)).unwrap_or(&0));
+            }
+
+            rows.push(row)
+        }
+
+        rows
     }
 }
 
@@ -126,5 +142,53 @@ mod tests {
                                          5,5 -> 8,2");
 
         assert_eq!(map.get_count_with_diagonals(), 12);
+    }
+
+    #[test]
+    fn test_diag1() {
+        let map = Map::from("1,1 -> 4,4");
+        assert_eq!(map.render(5, 5), vec![
+            vec![0, 0, 0, 0, 0],
+            vec![0, 1, 0, 0, 0],
+            vec![0, 0, 1, 0, 0],
+            vec![0, 0, 0, 1, 0],
+            vec![0, 0, 0, 0, 1],
+        ]);
+    }
+
+    #[test]
+    fn test_diag2() {
+        let map = Map::from("4,4 -> 1,1");
+        assert_eq!(map.render(5, 5), vec![
+            vec![0, 0, 0, 0, 0],
+            vec![0, 1, 0, 0, 0],
+            vec![0, 0, 1, 0, 0],
+            vec![0, 0, 0, 1, 0],
+            vec![0, 0, 0, 0, 1],
+        ]);
+    }
+
+    #[test]
+    fn test_diag3() {
+        let map = Map::from("3,1 -> 0,4");
+        assert_eq!(map.render(5, 5), vec![
+            vec![0, 0, 0, 0, 0],
+            vec![0, 0, 0, 1, 0],
+            vec![0, 0, 1, 0, 0],
+            vec![0, 1, 0, 0, 0],
+            vec![1, 0, 0, 0, 0],
+        ]);
+    }
+
+    #[test]
+    fn test_diag4() {
+        let map = Map::from("0,4 -> 3,1");
+        assert_eq!(map.render(5, 5), vec![
+            vec![0, 0, 0, 0, 0],
+            vec![0, 0, 0, 1, 0],
+            vec![0, 0, 1, 0, 0],
+            vec![0, 1, 0, 0, 0],
+            vec![1, 0, 0, 0, 0],
+        ]);
     }
 }
