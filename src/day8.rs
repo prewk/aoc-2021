@@ -9,3 +9,8 @@ pub fn input_generator(input: &str) -> Entries {
 pub fn part1(entries: &Entries) -> usize {
     entries.count_easily_guessed_outputs()
 }
+
+#[aoc(day8, part2)]
+pub fn part2(entries: &Entries) -> u64 {
+    entries.count_real_output().unwrap()
+}
