@@ -1,4 +1,4 @@
-use std::collections::{HashSet, HashMap};
+use std::collections::{HashMap};
 
 #[derive(Debug, PartialEq)]
 pub struct Map {
@@ -14,7 +14,7 @@ pub fn risk_level(height: u32) -> u32 {
 impl From<&str> for Map {
     fn from(input: &str) -> Self {
         let mut width = 0;
-        let height = input.lines().collect::<Vec<&str>>().len();
+        let height = input.lines().count();
 
         Map {
             tiles: input.lines().map(|line| {
@@ -30,10 +30,10 @@ impl From<&str> for Map {
 
 impl Map {
     pub fn peek(&self, x: usize, y: usize) -> Option<Window> {
-        let north = if y > 0 { self.tiles.get(y - 1).and_then(|r| r.get(x)).map(|h| *h) } else { None };
-        let east = self.tiles.get(y).and_then(|r| r.get(x + 1)).map(|h| *h);
-        let south = self.tiles.get(y + 1).and_then(|r| r.get(x)).map(|h| *h);
-        let west = if x > 0 { self.tiles.get(y).and_then(|r| r.get(x - 1)).map(|h| *h) } else { None };
+        let north = if y > 0 { self.tiles.get(y - 1).and_then(|r| r.get(x)).copied() } else { None };
+        let east = self.tiles.get(y).and_then(|r| r.get(x + 1)).copied();
+        let south = self.tiles.get(y + 1).and_then(|r| r.get(x)).copied();
+        let west = if x > 0 { self.tiles.get(y).and_then(|r| r.get(x - 1)).copied() } else { None };
         let center = *self.tiles.get(y).and_then(|r| r.get(x))?;
 
         Some(Window {
@@ -132,7 +132,7 @@ impl Map {
     pub fn mult_three_largest_basins(&self) -> usize {
         let mut basins = self.find_basins();
 
-        basins.sort();
+        basins.sort_unstable();
 
         basins.iter().rev().take(3).fold(1, |prod, b| b * prod)
     }

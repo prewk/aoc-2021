@@ -40,36 +40,34 @@ impl From<&str> for Map {
                         *vents_without_diag.entry((x, *from_y)).or_insert(0) += 1;
                         *vents_with_diag.entry((x, *from_y)).or_insert(0) += 1;
                     }
-                } else {
-                    if to_x > from_x {
-                        // ->
-                        if to_y > from_y {
-                            // \
-                            //  v
-                            for step in 0..=(*to_y - *from_y) {
-                                *vents_with_diag.entry((*from_x + step, *from_y + step)).or_insert(0) += 1;
-                            }
-                        } else {
-                            //  ^
-                            // /
-                            for step in 0..=(*from_y - *to_y) {
-                                *vents_with_diag.entry((*from_x + step, *from_y - step)).or_insert(0) += 1;
-                            }
+                } else if to_x > from_x {
+                    // ->
+                    if to_y > from_y {
+                        // \
+                        //  v
+                        for step in 0..=(*to_y - *from_y) {
+                            *vents_with_diag.entry((*from_x + step, *from_y + step)).or_insert(0) += 1;
                         }
                     } else {
-                        // <-
-                        if to_y > from_y {
-                            //  /
-                            // v
-                            for step in 0..=(*to_y - *from_y) {
-                                *vents_with_diag.entry((*from_x - step, *from_y + step)).or_insert(0) += 1;
-                            }
-                        } else {
-                            // ^
-                            //  \
-                            for step in 0..=(*from_y - *to_y) {
-                                *vents_with_diag.entry((*from_x - step, *from_y - step)).or_insert(0) += 1;
-                            }
+                        //  ^
+                        // /
+                        for step in 0..=(*from_y - *to_y) {
+                            *vents_with_diag.entry((*from_x + step, *from_y - step)).or_insert(0) += 1;
+                        }
+                    }
+                } else {
+                    // <-
+                    if to_y > from_y {
+                        //  /
+                        // v
+                        for step in 0..=(*to_y - *from_y) {
+                            *vents_with_diag.entry((*from_x - step, *from_y + step)).or_insert(0) += 1;
+                        }
+                    } else {
+                        // ^
+                        //  \
+                        for step in 0..=(*from_y - *to_y) {
+                            *vents_with_diag.entry((*from_x - step, *from_y - step)).or_insert(0) += 1;
                         }
                     }
                 }

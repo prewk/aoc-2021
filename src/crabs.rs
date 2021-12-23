@@ -35,7 +35,7 @@ impl Crabs {
     fn calc_const_fuel_for(&self, target: u64) -> u64 {
         self.calc_distances_for(target)
             .iter()
-            .fold(0, |fuel, distance| fuel + distance)
+            .sum()
     }
 
     fn calc_var_fuel_for(&self, target: u64) -> u64 {

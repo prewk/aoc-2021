@@ -7,10 +7,10 @@ pub fn input_generator(input: &str) -> FishyWaters {
 
 #[aoc(day6, part1)]
 pub fn part1(waters: &FishyWaters) -> u64 {
-    count_fishes(&waters, 80)
+    count_fishes(waters, 80)
 }
 
 #[aoc(day6, part2)]
 pub fn part2(waters: &FishyWaters) -> u64 {
-    count_fishes(&waters, 256)
+    count_fishes(waters, 256)
 }

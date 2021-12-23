@@ -7,7 +7,7 @@ pub fn input_generator(input: &str) -> Map {
 
 #[aoc(day9, part1)]
 pub fn part1(map: &Map) -> u32 {
-    risk_sum(&map)
+    risk_sum(map)
 }
 
 #[aoc(day9, part2)]

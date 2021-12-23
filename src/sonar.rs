@@ -34,7 +34,7 @@ fn get_windows(depths: &Vec<u64>) -> Vec<u64> {
     let mut windows = vec![];
 
     for i in 0..depths.len() {
-        windows.push(get_window(&depths.iter().skip(i).map(|v| *v).collect()));
+        windows.push(get_window(&depths.iter().skip(i).copied().collect()));
     }
 
     windows

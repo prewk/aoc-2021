@@ -18,7 +18,7 @@ impl From<&Vec<&str>> for BingoBoard {
         ];
 
         for line in lines {
-            if line.len() == 0 {
+            if line.is_empty() {
                 continue;
             }
 
@@ -74,7 +74,7 @@ impl From<BingoBoard> for Play {
 
 impl Play {
     pub fn draw(&mut self, drawn: &u64) {
-        if self.marked.contains_key(&drawn) {
+        if self.marked.contains_key(drawn) {
             self.marked.insert(*drawn, true);
         }
     }
@@ -121,7 +121,7 @@ impl From<&str> for Bingo {
 
         let draws: Vec<u64> = input
             .lines()
-            .nth(0)
+            .next()
             .expect("First line must exist")
             .split(',')
             .map(|n| n.parse::<u64>())

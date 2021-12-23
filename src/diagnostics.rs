@@ -11,7 +11,7 @@ impl From<&str> for Diagnostics {
         Diagnostics {
             bits: input
                 .lines()
-                .nth(0)
+                .next()
                 .expect("Expected at least one line")
                 .len(),
             report: input
@@ -84,13 +84,13 @@ impl Diagnostics {
                     true => *value & pos_val == 0,
                     false => *value & pos_val == pos_val,
                 },
-            }).map(|v| *v).collect();
+            }).copied().collect();
 
             if next_keepers.len() == 1 {
-                rating = next_keepers.get(0).map(|v| *v);
+                rating = next_keepers.get(0).copied();
                 break;
             } else if next_keepers.is_empty() {
-                rating = keepers.last().map(|v| *v);
+                rating = keepers.last().copied();
                 break;
             }
 

@@ -109,7 +109,7 @@ fn get_all_possible() -> Vec<Wiring> {
 }
 
 fn filter_possible_using_data(
-    possibles: &Vec<Wiring>,
+    possibles: &[Wiring],
     data: &HashSet<Segment>,
     relevant: &HashSet<Segment>,
 ) -> Vec<Wiring> {
@@ -134,8 +134,8 @@ fn filter_possible_using_data(
         // ..C..F.
         // No
 
-        let data_mask = possible.get_mask(&data);
-        let relevant_mask = reference.get_mask(&relevant);
+        let data_mask = possible.get_mask(data);
+        let relevant_mask = reference.get_mask(relevant);
 
         if data_mask == relevant_mask {
             filtered.push(possible.clone());
@@ -146,7 +146,7 @@ fn filter_possible_using_data(
 }
 
 fn filter_possible_by_rewiring(
-    possibles: &Vec<Wiring>,
+    possibles: &[Wiring],
     digit: &Digit
 ) -> Vec<Wiring> {
     let mut filtered: HashSet<Wiring> = HashSet::new();
@@ -178,14 +178,14 @@ impl Digit {
             _ => {}
         };
 
-        return None;
+        None
     }
 
     pub fn wire(&self, wiring: &Wiring) -> Option<u64> {
         let mut segments: [bool; 7] = [false, false, false, false, false, false, false];
 
         for letter in &self.letters {
-            let index = wiring.get_index_for(&letter)?;
+            let index = wiring.get_index_for(letter)?;
 
             segments[index] = true;
         }
@@ -231,9 +231,8 @@ impl Entry {
         self.output
             .iter()
             .map(|d| d.easy_guess())
-            .filter_map(|s| s)
-            .collect::<Vec<u64>>()
-            .len()
+            .flatten()
+            .count()
     }
 }
 
@@ -258,11 +257,10 @@ impl Entries {
                     .output
                     .iter()
                     .map(|d| d.easy_guess())
-                    .filter_map(|s| s)
-                    .collect::<Vec<u64>>()
-                    .len()
+                    .flatten()
+                    .count()
             })
-            .fold(0, |acc, len| acc + len)
+            .sum()
     }
 
     pub fn count_real_output(&self) -> Option<u64> {
@@ -303,7 +301,7 @@ impl Entries {
             let output_count = entry.output.len();
 
             for i in 0..output_count {
-                let digit = entry.output[i].wire(&correct_wiring)?;
+                let digit = entry.output[i].wire(correct_wiring)?;
 
                 agg += digit * u64::pow(ten, (output_count - i - 1) as u32);
             }

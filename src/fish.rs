@@ -9,7 +9,7 @@ impl From<&str> for FishyWaters {
 
         input
             .lines()
-            .nth(0)
+            .next()
             .unwrap()
             .split(',')
             .map(|n| n.parse::<u64>())
@@ -25,10 +25,10 @@ impl From<&str> for FishyWaters {
 }
 
 pub fn count_fishes(waters: &FishyWaters, day_count: usize) -> u64 {
-    let mut state = waters.days.clone();
+    let mut state = waters.days;
 
     for _ in 0..day_count {
-        let mut wip = state.clone();
+        let mut wip = state;
 
         wip[8] = state[0];
         wip[7] = state[8];
