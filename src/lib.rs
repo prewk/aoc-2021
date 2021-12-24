@@ -1,5 +1,6 @@
 extern crate aoc_runner;
 extern crate regex;
+extern crate either;
 
 #[macro_use]
 extern crate aoc_runner_derive;
