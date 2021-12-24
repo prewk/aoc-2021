@@ -1,0 +1,237 @@
+use std::fmt::{Display, Formatter};
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum BracketShape {
+    Round,
+    Angular,
+    Square,
+    Curly,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Bracket {
+    Open(BracketShape),
+    Close(BracketShape),
+}
+
+impl Bracket {
+    pub fn shape(&self) -> BracketShape {
+        match *self {
+            Bracket::Open(s) => s,
+            Bracket::Close(s) => s,
+        }
+    }
+}
+
+impl From<char> for Bracket {
+    fn from(input: char) -> Self {
+        match input {
+            '(' => Bracket::Open(BracketShape::Round),
+            ')' => Bracket::Close(BracketShape::Round),
+            '{' => Bracket::Open(BracketShape::Curly),
+            '}' => Bracket::Close(BracketShape::Curly),
+            '[' => Bracket::Open(BracketShape::Square),
+            ']' => Bracket::Close(BracketShape::Square),
+            '<' => Bracket::Open(BracketShape::Angular),
+            '>' => Bracket::Close(BracketShape::Angular),
+            _ => panic!("Invalid char")
+        }
+    }
+}
+
+impl Display for Bracket {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", match *self {
+             Bracket::Open(BracketShape::Round) => '(',
+             Bracket::Close(BracketShape::Round) => ')',
+             Bracket::Open(BracketShape::Curly) => '{',
+             Bracket::Close(BracketShape::Curly) => '}',
+             Bracket::Open(BracketShape::Square) => '[',
+             Bracket::Close(BracketShape::Square) => ']',
+             Bracket::Open(BracketShape::Angular) => '<',
+             Bracket::Close(BracketShape::Angular) => '>',
+        })
+    }
+}
+
+pub fn parse_line(line: &str) -> Vec<Bracket> {
+    line.chars().map(Bracket::from).collect()
+}
+
+pub fn parse_lines(input: &str) -> Vec<Vec<Bracket>> {
+    input.lines().map(parse_line).collect()
+}
+
+#[derive(PartialEq, Debug)]
+pub struct LintError {
+    pub expected: BracketShape,
+    pub found: BracketShape,
+    pub open_pos: usize,
+    pub err_pos: usize,
+}
+
+pub fn lint_line(line: &[Bracket]) -> Option<LintError> {
+    let mut stack: Vec<BracketShape> = vec![];
+    let mut open_pos: Vec<usize> = vec![];
+
+    for (i, bracket) in line.iter().enumerate() {
+        match stack.last() {
+            None => {
+                stack.push(bracket.shape());
+                open_pos.push(0)
+            }
+            Some(&current) => {
+                match current {
+                    BracketShape::Round => match bracket {
+                        Bracket::Open(shape) => {
+                            stack.push(*shape);
+                            open_pos.push(i);
+                        }
+                        Bracket::Close(BracketShape::Round) => {
+                            stack.pop();
+                            open_pos.pop();
+                        }
+                        _ => { return Some(LintError { expected: BracketShape::Round, found: bracket.shape(), open_pos: *open_pos.last().unwrap(), err_pos: i }); }
+                    }
+                    BracketShape::Angular => match bracket {
+                        Bracket::Open(shape) => {
+                            stack.push(*shape);
+                            open_pos.push(i);
+                        }
+                        Bracket::Close(BracketShape::Angular) => {
+                            stack.pop();
+                            open_pos.pop();
+                        }
+                        _ => { return Some(LintError { expected: BracketShape::Angular, found: bracket.shape(), open_pos: *open_pos.last().unwrap(), err_pos: i }); }
+                    }
+                    BracketShape::Square => match bracket {
+                        Bracket::Open(shape) => {
+                            stack.push(*shape);
+                            open_pos.push(i);
+                        }
+                        Bracket::Close(BracketShape::Square) => {
+                            stack.pop();
+                            open_pos.pop();
+                        }
+                        _ => { return Some(LintError { expected: BracketShape::Square, found: bracket.shape(), open_pos: *open_pos.last().unwrap(), err_pos: i }); }
+                    }
+                    BracketShape::Curly => match bracket {
+                        Bracket::Open(shape) => {
+                            stack.push(*shape);
+                            open_pos.push(i);
+                        }
+                        Bracket::Close(BracketShape::Curly) => {
+                            stack.pop();
+                            open_pos.pop();
+                        }
+                        _ => { return Some(LintError { expected: BracketShape::Curly, found: bracket.shape(), open_pos: *open_pos.last().unwrap(), err_pos: i }); }
+                    }
+                }
+            }
+        }
+    }
+
+    None
+}
+
+pub fn to_score(shape: &BracketShape) -> usize {
+    match shape {
+        BracketShape::Round => 3,
+        BracketShape::Angular => 25137,
+        BracketShape::Square => 57,
+        BracketShape::Curly => 1197,
+    }
+}
+
+pub fn calc_syntax_score(lines: &[Vec<Bracket>]) -> usize {
+    let mut score = 0;
+
+    for line in lines {
+        let lint = lint_line(line);
+
+        if let Some(lint_err) = lint {
+            score += to_score(&lint_err.found);
+        }
+    }
+
+    score
+}
+
+pub fn lint_graphically(lines: &[Vec<Bracket>]) {
+    let mut score = 0;
+
+    for line in lines {
+        let lint = lint_line(&line);
+
+        for c in line {
+            print!("{}", c);
+        }
+        print!("\n");
+
+        if let Some(lint_err) = lint {
+            let line_score = to_score(&lint_err.found);
+
+            if lint_err.open_pos > 0 {
+                for _ in 0..lint_err.open_pos {
+                    print!(" ");
+                }
+            }
+            print!("^");
+            for _ in 0..(lint_err.err_pos - lint_err.open_pos - 1) {
+                print!("-");
+            }
+            print!("^-Expected {:?}, Found {:?}     {} + {}\n", lint_err.expected, lint_err.found, score, line_score);
+
+            score += line_score;
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_lint_line() {
+        assert_eq!(
+            lint_line(&parse_line("{([(<{}[<>[]}>{[]{[(<()>")),
+            (Some(LintError { expected: BracketShape::Square, found: BracketShape::Curly, open_pos: 7, err_pos: 12 }))
+        );
+
+        assert_eq!(
+            lint_line(&parse_line("[[<[([]))<([[{}[[()]]]")),
+            (Some(LintError { expected: BracketShape::Square, found: BracketShape::Round, open_pos: 3, err_pos: 8 }))
+        );
+
+        assert_eq!(
+            lint_line(&parse_line("[{[{({}]{}}([{[{{{}}([]")),
+            (Some(LintError { expected: BracketShape::Round, found: BracketShape::Square, open_pos: 4, err_pos: 7 }))
+        );
+
+        assert_eq!(
+            lint_line(&parse_line("[<(<(<(<{}))><([]([]()")),
+            (Some(LintError { expected: BracketShape::Angular, found: BracketShape::Round, open_pos: 7, err_pos: 10 }))
+        );
+
+        assert_eq!(
+            lint_line(&parse_line("<{([([[(<>()){}]>(<<{{")),
+            (Some(LintError { expected: BracketShape::Square, found: BracketShape::Angular, open_pos: 5, err_pos: 16 }))
+        );
+    }
+
+    #[test]
+    fn test_score() {
+        let lines = parse_lines("[({(<(())[]>[[{[]{<()<>>\n\
+                                                [(()[<>])]({[<{<<[]>>(\n\
+                                                {([(<{}[<>[]}>{[]{[(<()>\n\
+                                                (((({<>}<{<{<>}{[]{[]{}\n\
+                                                [[<[([]))<([[{}[[()]]]\n\
+                                                [{[{({}]{}}([{[{{{}}([]\n\
+                                                {<[[]]>}<{[{[{[]{()[[[]\n\
+                                                [<(<(<(<{}))><([]([]()\n\
+                                                <{([([[(<>()){}]>(<<{{\n\
+                                                <{([{{}}[<[[[<>{}]]]>[]]");
+
+        assert_eq!(calc_syntax_score(&lines), 26397);
+    }
+}
