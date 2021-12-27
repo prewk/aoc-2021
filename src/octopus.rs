@@ -90,6 +90,19 @@ impl Map {
     }
 }
 
+pub fn find_sync_flash_step(map: &Map) -> usize {
+    let mut step = map.clone();
+    let mut i = 0;
+
+    while step.octopi.iter().flatten().map(|o| *o as usize).sum::<usize>() > 0 {
+        step = step.tick();
+
+        i += 1;
+    }
+
+    i
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -187,5 +200,21 @@ mod tests {
         ]);
 
         assert_eq!(step.flash_count, 1656);
+    }
+
+    #[test]
+    fn test_sync_flash() {
+        let map = Map::from("5483143223\n\
+                                    2745854711\n\
+                                    5264556173\n\
+                                    6141336146\n\
+                                    6357385478\n\
+                                    4167524645\n\
+                                    2176841721\n\
+                                    6882881134\n\
+                                    4846848554\n\
+                                    5283751526");
+
+        assert_eq!(find_sync_flash_step(&map), 195);
     }
 }

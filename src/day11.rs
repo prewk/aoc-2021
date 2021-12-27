@@ -13,3 +13,8 @@ pub fn part1(map: &Map) -> usize {
 
     step.flash_count
 }
+
+#[aoc(day11, part2)]
+pub fn part2(map: &Map) -> usize {
+    find_sync_flash_step(&map)
+}
