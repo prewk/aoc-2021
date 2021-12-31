@@ -71,20 +71,27 @@ impl Diagnostics {
         for bit in (0..self.bits).rev() {
             let pos_val = u64::pow(two, bit as u32) as usize;
 
-            let ones = keepers.iter().filter(|value| *value & pos_val == pos_val).count();
+            let ones = keepers
+                .iter()
+                .filter(|value| *value & pos_val == pos_val)
+                .count();
             let zeroes = keepers.iter().filter(|value| *value & pos_val == 0).count();
             let half = (keepers.len() as f64 / 2.0).ceil() as usize;
 
-            let next_keepers: Vec<usize> = keepers.iter().filter(|value| match method {
-                RatingMethod::Oxygen => match ones >= half {
-                    true => *value & pos_val == pos_val,
-                    false => *value & pos_val == 0,
-                },
-                RatingMethod::Co2 => match zeroes <= ones {
-                    true => *value & pos_val == 0,
-                    false => *value & pos_val == pos_val,
-                },
-            }).copied().collect();
+            let next_keepers: Vec<usize> = keepers
+                .iter()
+                .filter(|value| match method {
+                    RatingMethod::Oxygen => match ones >= half {
+                        true => *value & pos_val == pos_val,
+                        false => *value & pos_val == 0,
+                    },
+                    RatingMethod::Co2 => match zeroes <= ones {
+                        true => *value & pos_val == 0,
+                        false => *value & pos_val == pos_val,
+                    },
+                })
+                .copied()
+                .collect();
 
             if next_keepers.len() == 1 {
                 rating = next_keepers.get(0).copied();

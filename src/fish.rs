@@ -18,9 +18,7 @@ impl From<&str> for FishyWaters {
                 days[day as usize] += 1;
             });
 
-        FishyWaters {
-            days
-        }
+        FishyWaters { days }
     }
 }
 

@@ -114,7 +114,17 @@ fn filter_possible_using_data(
     relevant: &HashSet<Segment>,
 ) -> Vec<Wiring> {
     let mut filtered: Vec<Wiring> = vec![];
-    let reference = Wiring { wire_to: [Segment::A, Segment::B, Segment::C, Segment::D, Segment::E, Segment::F, Segment::G] };
+    let reference = Wiring {
+        wire_to: [
+            Segment::A,
+            Segment::B,
+            Segment::C,
+            Segment::D,
+            Segment::E,
+            Segment::F,
+            Segment::G,
+        ],
+    };
 
     for possible in possibles {
         //  aaaa
@@ -145,14 +155,11 @@ fn filter_possible_using_data(
     filtered
 }
 
-fn filter_possible_by_rewiring(
-    possibles: &[Wiring],
-    digit: &Digit
-) -> Vec<Wiring> {
+fn filter_possible_by_rewiring(possibles: &[Wiring], digit: &Digit) -> Vec<Wiring> {
     let mut filtered: HashSet<Wiring> = HashSet::new();
 
     for possible in possibles {
-        if digit.wire(possible).is_some()  {
+        if digit.wire(possible).is_some() {
             filtered.insert(possible.clone());
         }
     }
@@ -228,11 +235,7 @@ impl From<&str> for Entry {
 
 impl Entry {
     pub fn count_easily_guessed_outputs(&self) -> usize {
-        self.output
-            .iter()
-            .map(|d| d.easy_guess())
-            .flatten()
-            .count()
+        self.output.iter().map(|d| d.easy_guess()).flatten().count()
     }
 }
 
@@ -276,18 +279,27 @@ impl Entries {
 
             // println!("possibles 1: {}", possibles.len());
 
-            for digit in &entry.digits.iter().cloned().chain(entry.output.iter().cloned()).collect::<Vec<Digit>>() {
+            for digit in &entry
+                .digits
+                .iter()
+                .cloned()
+                .chain(entry.output.iter().cloned())
+                .collect::<Vec<Digit>>()
+            {
                 match digit.easy_guess() {
                     Some(1) => {
-                        possibles = filter_possible_using_data(&possibles, &digit.letters, &one_set);
-                    },
+                        possibles =
+                            filter_possible_using_data(&possibles, &digit.letters, &one_set);
+                    }
                     Some(4) => {
-                        possibles = filter_possible_using_data(&possibles, &digit.letters, &four_set);
-                    },
+                        possibles =
+                            filter_possible_using_data(&possibles, &digit.letters, &four_set);
+                    }
                     Some(7) => {
-                        possibles = filter_possible_using_data(&possibles, &digit.letters, &seven_set);
-                    },
-                    _ => {},
+                        possibles =
+                            filter_possible_using_data(&possibles, &digit.letters, &seven_set);
+                    }
+                    _ => {}
                 }
             }
 
@@ -319,7 +331,15 @@ mod tests {
     fn test_parse() {
         let entry = Entry::from("acedgfb cdfbe ab | cdfeb");
 
-        for c in [Segment::A, Segment::C, Segment::E, Segment::D, Segment::G, Segment::F, Segment::B] {
+        for c in [
+            Segment::A,
+            Segment::C,
+            Segment::E,
+            Segment::D,
+            Segment::G,
+            Segment::F,
+            Segment::B,
+        ] {
             assert!(entry.digits[0].letters.contains(&c));
         }
     }
@@ -366,8 +386,28 @@ mod tests {
 
     #[test]
     fn test_wire() {
-        let wiring1 = Wiring { wire_to: [Segment::A, Segment::B, Segment::C, Segment::D, Segment::E, Segment::F, Segment::G] };
-        let wiring2 = Wiring { wire_to: [Segment::C, Segment::B, Segment::A, Segment::F, Segment::E, Segment::D, Segment::G] };
+        let wiring1 = Wiring {
+            wire_to: [
+                Segment::A,
+                Segment::B,
+                Segment::C,
+                Segment::D,
+                Segment::E,
+                Segment::F,
+                Segment::G,
+            ],
+        };
+        let wiring2 = Wiring {
+            wire_to: [
+                Segment::C,
+                Segment::B,
+                Segment::A,
+                Segment::F,
+                Segment::E,
+                Segment::D,
+                Segment::G,
+            ],
+        };
 
         assert_eq!(Digit::from("ad").wire(&wiring1), None);
         assert_eq!(Digit::from("ad").wire(&wiring2), Some(1));

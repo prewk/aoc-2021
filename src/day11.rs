@@ -1,7 +1,9 @@
 use crate::octopus::*;
 
 #[aoc_generator(day11)]
-pub fn input_generator(input: &str) -> Map { Map::from(input) }
+pub fn input_generator(input: &str) -> Map {
+    Map::from(input)
+}
 
 #[aoc(day11, part1)]
 pub fn part1(map: &Map) -> usize {
@@ -16,5 +18,5 @@ pub fn part1(map: &Map) -> usize {
 
 #[aoc(day11, part2)]
 pub fn part2(map: &Map) -> usize {
-    find_sync_flash_step(&map)
+    find_sync_flash_step(map)
 }

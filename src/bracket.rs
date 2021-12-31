@@ -212,8 +212,8 @@ pub fn calc_complete_score(line: &Vec<Bracket>) -> Option<usize> {
         .iter()
         .rev()
         .take(completed.len() - incomplete_len)
-        .rev() {
-
+        .rev()
+    {
         score *= 5;
         score += to_complete_score(&bracket.shape());
     }
@@ -350,7 +350,8 @@ mod tests {
 
     #[test]
     fn test_score() {
-        let lines = parse_lines("[({(<(())[]>[[{[]{<()<>>\n\
+        let lines = parse_lines(
+            "[({(<(())[]>[[{[]{<()<>>\n\
                                                 [(()[<>])]({[<{<<[]>>(\n\
                                                 {([(<{}[<>[]}>{[]{[(<()>\n\
                                                 (((({<>}<{<{<>}{[]{[]{}\n\
@@ -430,16 +431,32 @@ mod tests {
 
     #[test]
     fn test_complete_score() {
-        assert_eq!(calc_complete_score(&parse_line("[({(<(())[]>[[{[]{<()<>>")), Some(288957));
-        assert_eq!(calc_complete_score(&parse_line("[(()[<>])]({[<{<<[]>>(")), Some(5566));
-        assert_eq!(calc_complete_score(&parse_line("(((({<>}<{<{<>}{[]{[]{}")), Some(1480781));
-        assert_eq!(calc_complete_score(&parse_line("{<[[]]>}<{[{[{[]{()[[[]")), Some(995444));
-        assert_eq!(calc_complete_score(&parse_line("<{([{{}}[<[[[<>{}]]]>[]]")), Some(294));
+        assert_eq!(
+            calc_complete_score(&parse_line("[({(<(())[]>[[{[]{<()<>>")),
+            Some(288957)
+        );
+        assert_eq!(
+            calc_complete_score(&parse_line("[(()[<>])]({[<{<<[]>>(")),
+            Some(5566)
+        );
+        assert_eq!(
+            calc_complete_score(&parse_line("(((({<>}<{<{<>}{[]{[]{}")),
+            Some(1480781)
+        );
+        assert_eq!(
+            calc_complete_score(&parse_line("{<[[]]>}<{[{[{[]{()[[[]")),
+            Some(995444)
+        );
+        assert_eq!(
+            calc_complete_score(&parse_line("<{([{{}}[<[[[<>{}]]]>[]]")),
+            Some(294)
+        );
     }
 
     #[test]
     fn test_middle_score() {
-        let lines = parse_lines("[({(<(())[]>[[{[]{<()<>>\n\
+        let lines = parse_lines(
+            "[({(<(())[]>[[{[]{<()<>>\n\
                                                 [(()[<>])]({[<{<<[]>>(\n\
                                                 {([(<{}[<>[]}>{[]{[(<()>\n\
                                                 (((({<>}<{<{<>}{[]{[]{}\n\
