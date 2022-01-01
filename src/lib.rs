@@ -17,6 +17,7 @@ pub mod smoke;
 pub mod sonar;
 pub mod submarine;
 pub mod vents;
+pub mod fold;
 
 pub mod day1;
 pub mod day2;
@@ -30,5 +31,6 @@ pub mod day9;
 pub mod day10;
 pub mod day11;
 pub mod day12;
+pub mod day13;
 
 aoc_lib! { year = 2021 }
