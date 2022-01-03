@@ -1,6 +1,7 @@
 extern crate aoc_runner;
 extern crate either;
 extern crate regex;
+extern crate png_encode_mini;
 
 #[macro_use]
 extern crate aoc_runner_derive;
