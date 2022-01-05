@@ -267,7 +267,7 @@ pub fn lint_graphically(lines: &[Vec<Bracket>]) {
         for c in line {
             print!("{}", c);
         }
-        print!("\n");
+        println!();
 
         if let Either::Right(lint_err) = lint {
             let line_score = to_error_score(&lint_err.found);
@@ -281,8 +281,8 @@ pub fn lint_graphically(lines: &[Vec<Bracket>]) {
             for _ in 0..(lint_err.err_pos - lint_err.open_pos - 1) {
                 print!("-");
             }
-            print!(
-                "^-Expected {:?}, Found {:?}     {} + {}\n",
+            println!(
+                "^-Expected {:?}, Found {:?}     {} + {}",
                 lint_err.expected, lint_err.found, score, line_score
             );
 

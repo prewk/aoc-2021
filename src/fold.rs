@@ -44,7 +44,7 @@ impl From<&str> for Instructions {
                         .parse::<i64>()
                         .expect("Invalid x fold parse"),
                 ));
-            } else if line.contains(",") {
+            } else if line.contains(',') {
                 let coords = line
                     .split(',')
                     .map(|coord| coord.parse::<i64>())
@@ -177,11 +177,7 @@ impl Paper {
                     row.iter()
                         .enumerate()
                         .map(
-                            |(x, dot)| match (*dot, top.get(y).and_then(|t_row| t_row.get(x))) {
-                                (true, _) => true,
-                                (false, Some(&true)) => true,
-                                _ => false,
-                            },
+                            |(x, dot)| matches!((*dot, top.get(y).and_then(|t_row| t_row.get(x))), (true, _) | (false, Some(&true))),
                         )
                         .collect()
                 })
@@ -266,8 +262,7 @@ impl Paper {
             .iter()
             .map(|row| row.iter().filter(|dot| **dot).collect::<Vec<&bool>>())
             .flatten()
-            .collect::<Vec<&bool>>()
-            .len()
+            .count()
     }
 }
 

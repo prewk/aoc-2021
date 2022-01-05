@@ -22,5 +22,5 @@ pub fn part2(instr: &Instructions) -> String {
         last = Some(fold);
     }
 
-    format!("\n{}", last.unwrap().to_string())
+    format!("\n{}", last.unwrap())
 }
