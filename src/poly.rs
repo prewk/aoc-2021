@@ -21,38 +21,45 @@ impl From<&str> for Rule {
 
 #[derive(Debug, Clone)]
 pub struct Poly {
-    pub template: Vec<char>,
     pub rules: Vec<Rule>,
+    pub stats: HashMap<[char; 2], u64>,
+    pub template: Vec<char>,
 }
 
 impl From<&str> for Poly {
     fn from(input: &str) -> Self {
+        let template = input.lines().next().expect("Invalid input (1)").chars().collect::<Vec<char>>();
+
+        let mut stats: HashMap<[char; 2], u64> = HashMap::new();
+
+        for i in 0..(template.len() - 1) {
+            if let (Some(left), Some(right)) = (template.get(i), template.get(i + 1)) {
+                *stats.entry([*left, *right]).or_insert(0) += 1;
+            }
+        }
+
         Poly {
-            template: input.lines().next().expect("Invalid input (1)").chars().collect(),
             rules: input.lines().skip(2).map(Rule::from).collect(),
+            stats,
+            template,
         }
     }
 }
 
 impl Iterator for Poly {
-    type Item = Vec<char>;
+    type Item = HashMap<[char; 2], u64>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut next: Vec<char> = vec![];
+        let mut next = HashMap::new();
 
-        for i in 0..(self.template.len() - 1) {
-            let left = *self.template.get(i)?;
-            let right = *self.template.get(i + 1)?;
-
-            next.push(left);
-            if let Some(rule) = self.rules.iter().find(|rule| rule.left == left && rule.right == right) {
-                next.push(rule.insertee);
+        for rule in &self.rules {
+            if let Some(stat) = self.stats.get(&[rule.left, rule.right]) {
+                *next.entry([rule.left, rule.insertee]).or_insert(0) += stat;
+                *next.entry([rule.insertee, rule.right]).or_insert(0) += stat;
             }
         }
 
-        next.push(*self.template.last()?);
-
-        self.template = next.clone();
+        self.stats = next.clone();
 
         Some(next)
     }
@@ -70,9 +77,14 @@ impl Poly {
     pub fn common(&self) -> Option<PolyLetterCount> {
         let mut map: HashMap<char, u64> = HashMap::new();
 
-        for c in &self.template {
-            *map.entry(*c).or_insert(0) += 1;
+        for (key, value) in &self.stats {
+            let left = key[0];
+
+            *map.entry(left).or_insert(0) += *value;
         }
+
+        let last = *self.template.last()?;
+        *map.entry(last).or_insert(0) += 1;
 
         let mut most = map.keys().next()?;
         let mut least = map.keys().next()?;
@@ -97,7 +109,7 @@ impl Poly {
         })
     }
 
-    pub fn part1(&self) -> Option<u64> {
+    pub fn puzzle_output(&self) -> Option<u64> {
         let common = self.common()?;
 
         Some(common.most_cnt - common.least_cnt)
@@ -129,42 +141,12 @@ mod tests {
                                     CC -> N\n\
                                     CN -> C");
 
-        assert_eq!(poly.template, "NNCB".chars().collect::<Vec<char>>());
-        assert_eq!(poly.common().unwrap().least_cnt, 1);
-        assert_eq!(poly.common().unwrap().most_cnt, 2);
+        for _ in 0..10 {
+            poly.next().unwrap();
+        }
 
-        poly.next().unwrap();
-        assert_eq!(poly.template, "NCNBCHB".chars().collect::<Vec<char>>());
-        assert_eq!(poly.common().unwrap().least_cnt, 1);
-        assert_eq!(poly.common().unwrap().most_cnt, 2);
-
-        poly.next().unwrap();
-        assert_eq!(poly.template, "NBCCNBBBCBHCB".chars().collect::<Vec<char>>());
-        assert_eq!(poly.common().unwrap().least_cnt, 1);
-        assert_eq!(poly.common().unwrap().most_cnt, 6);
-
-        poly.next().unwrap();
-        assert_eq!(poly.template, "NBBBCNCCNBBNBNBBCHBHHBCHB".chars().collect::<Vec<char>>());
-        assert_eq!(poly.common().unwrap().least_cnt, 4);
-        assert_eq!(poly.common().unwrap().most_cnt, 11);
-
-        poly.next().unwrap();
-        assert_eq!(poly.template, "NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB".chars().collect::<Vec<char>>());
-        assert_eq!(poly.common().unwrap().least_cnt, 5);
-        assert_eq!(poly.common().unwrap().most_cnt, 23);
-
-        poly.next().unwrap();
-        poly.next().unwrap();
-        poly.next().unwrap();
-        poly.next().unwrap();
-        poly.next().unwrap();
-        poly.next().unwrap();
-
-        assert_eq!(poly.common(), Some(PolyLetterCount {
-            least: 'H',
-            least_cnt: 161,
-            most: 'B',
-            most_cnt: 1749,
-        }));
+        assert_eq!(poly.common().unwrap().least_cnt, 161);
+        assert_eq!(poly.common().unwrap().most_cnt, 1749);
+        assert_eq!(poly.puzzle_output(), Some(1588));
     }
 }

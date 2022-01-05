@@ -11,5 +11,16 @@ pub fn part1(poly: &Poly) -> u64 {
         m_poly.next().unwrap();
     }
 
-    m_poly.part1().unwrap()
+    m_poly.puzzle_output().unwrap()
+}
+
+#[aoc(day14, part2)]
+pub fn part2(poly: &Poly) -> u64 {
+    let mut m_poly = poly.clone();
+
+    for _ in 0..40 {
+        m_poly.next().unwrap();
+    }
+
+    m_poly.puzzle_output().unwrap()
 }
