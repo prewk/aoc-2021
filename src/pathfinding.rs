@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
-use std::collections::{VecDeque, HashSet};
+use std::collections::{VecDeque};
 
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialOrd, PartialEq, Ord)]
 pub struct Pos {
@@ -8,7 +8,7 @@ pub struct Pos {
     pub y: i64,
 }
 
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub struct Node {
     pub cost: i64,
     pub position: Pos,
@@ -54,7 +54,7 @@ impl Pos {
             Pos { x: self.x, y: self.y + 1 },
         ].iter().filter(|pos| {
             match (threshold, map.nodes.get(pos)) {
-                (None, Some(node)) => true,
+                (None, Some(_)) => true,
                 (Some(threshold), Some(node)) => node.cost <= threshold,
                 _ => false,
             }
