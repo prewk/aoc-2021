@@ -4,14 +4,14 @@ use std::collections::{VecDeque, HashSet};
 
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialOrd, PartialEq, Ord)]
 pub struct Pos {
-    x: i64,
-    y: i64,
+    pub x: i64,
+    pub y: i64,
 }
 
 #[derive(Copy, Clone, Eq, PartialEq)]
-struct Node {
-    cost: i64,
-    position: Pos,
+pub struct Node {
+    pub cost: i64,
+    pub position: Pos,
 }
 
 impl Ord for Node {
@@ -28,7 +28,7 @@ impl PartialOrd for Node {
 }
 
 pub struct Map {
-    nodes: HashMap<Pos, Node>,
+    pub nodes: HashMap<Pos, Node>,
 }
 
 impl From<&Vec<Node>> for Map {

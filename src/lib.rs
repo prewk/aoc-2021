@@ -20,6 +20,8 @@ pub mod submarine;
 pub mod vents;
 pub mod fold;
 pub mod poly;
+pub mod chiton;
+pub mod pathfinding;
 
 pub mod day1;
 pub mod day2;
@@ -35,5 +37,6 @@ pub mod day11;
 pub mod day12;
 pub mod day13;
 pub mod day14;
+pub mod day15;
 
 aoc_lib! { year = 2021 }
